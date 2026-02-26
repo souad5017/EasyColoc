@@ -4,11 +4,15 @@
         <div class="w-full max-w-md bg-white/80 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/30">
 
             <!-- Title -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 flex flex-col items-center justify-center">
+                    <x-application-logo class="w-24 h-24 fill-current text-indigo-600" />
+
+
                 <h2 class="text-4xl font-extrabold text-gray-800">
                     Welcome Back
                 </h2>
-                <p class="text-gray-500 mt-2 text-sm">
+
+                <p class="text-gray-500 mt-2 text-sm max-w-xs">
                     Login to manage your colocation with EasyColoc
                 </p>
             </div>
@@ -49,10 +53,10 @@
                 <!-- Actions -->
                 <div class="flex flex-col sm:flex-row sm:justify-between items-center mt-6">
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}"
-                           class="text-sm text-gray-600 hover:text-gray-900 transition underline mb-3 sm:mb-0">
-                            Forgot your password?
-                        </a>
+                    <a href="{{ route('password.request') }}"
+                        class="text-sm text-gray-600 hover:text-gray-900 transition underline mb-3 sm:mb-0">
+                        Forgot your password?
+                    </a>
                     @endif
 
                     <button type="submit"

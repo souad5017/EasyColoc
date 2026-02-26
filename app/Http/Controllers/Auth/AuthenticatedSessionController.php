@@ -18,6 +18,15 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
+    protected function authenticated(Request $request, $user)
+{
+    if ($user->is_banned) {
+        Auth::logout();
+        return back()->withErrors([
+            'email' => 'Votre compte est banni.',
+        ]);
+    }
+}
 
     /**
      * Handle an incoming authentication request.

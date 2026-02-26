@@ -2,9 +2,11 @@
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 px-4">
 
         <div class="w-full max-w-md bg-white/80 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/30">
-            
+
             <!-- Title -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 flex flex-col items-center justify-center">
+                <x-application-logo class="w-24 h-24 fill-current text-indigo-600" />
+
                 <h2 class="text-4xl font-extrabold text-gray-800">
                     Create Account
                 </h2>
@@ -23,7 +25,7 @@
                         class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition duration-300 outline-none"
                         placeholder="Enter your full name" required autofocus>
                     @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -34,7 +36,7 @@
                         class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition duration-300 outline-none"
                         placeholder="example@email.com" required>
                     @error('email')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -45,7 +47,7 @@
                         class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition duration-300 outline-none"
                         placeholder="••••••••" required>
                     @error('password')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 

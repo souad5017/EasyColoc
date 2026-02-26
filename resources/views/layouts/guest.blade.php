@@ -16,20 +16,8 @@
 </head>
 <body class="font-sans antialiased bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200">
 
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 px-4">
 
-        <!-- Logo -->
-        <div>
-            <a href="/">
-                <x-application-logo class="w-24 h-24 fill-current text-indigo-600" />
-            </a>
-        </div>
-
-        <!-- Form Container -->
-        <div class="w-full sm:max-w-md mt-6 px-8 py-10 bg-white/80 backdrop-blur-xl shadow-2xl overflow-hidden sm:rounded-3xl border border-white/30">
-            {{ $slot }}
-        </div>
-
-    </div>
+       
+ {{ $slot }} 
 </body>
 </html>
