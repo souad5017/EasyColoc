@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Colocation;
+use App\Models\Colocations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,6 +13,7 @@ class ColocationController extends Controller
     {
         $user = Auth::user();
         $colocations = $user->colocations()->get();
+       
 
         return view('colocations.index', compact('colocations'));
     }
@@ -31,7 +32,7 @@ class ColocationController extends Controller
 
         $user = Auth::user();
 
-        $colocation = Colocation::create([
+        $colocation = Colocations::create([
             'name' => $request->name,
             'status' => 'active',
             'created_by' => $user->id,
@@ -51,7 +52,7 @@ class ColocationController extends Controller
    
     public function show($id)
     {
-        $colocation = Colocation::findOrFail($id);
+        $colocation = Colocations::findOrFail($id);
         return view('colocations.show', compact('colocation'));
     }
 }

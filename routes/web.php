@@ -18,11 +18,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
-Route::middleware(['role:admin'])->group(function () {
     Route::get('/colocations/create', [ColocationController::class, 'create'])->name('colocations.createcolocation');
     Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/colocations', [ColocationController::class, 'index'])->name('colocations.index');
+    Route::get('/colocations/create', [ColocationController::class, 'create'])->name('colocations.createcolocation');
+    Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
+    Route::get('/colocations/{id}', [ColocationController::class, 'show'])->name('colocations.show');
 });
 
 require __DIR__.'/auth.php';
