@@ -10,18 +10,30 @@ class ColocationController extends Controller
 {
     public function dashboard()
 {
-    $activeColocation = Colocations::where('status', 'active')->first();
+    $colocation =  Colocations::where('status', 'active')->first();
 
-    return view('dashboard', compact('activeColocation'));
+    return view('colocations.show', compact('colocation'));
 }
 
     public function index()
     {
         $user = Auth::user();
-        $colocations = $user->colocations()->get();
-       
 
-        return view('colocations.index', compact('colocations'));
+        
+        $totalColocations = 5; 
+        $totalMembers = 8;
+        $totalExpenses = 1;
+        $pendingPayments =4;
+
+        // $recentColocations = $user->colocations()->latest()->take(5)->get();
+
+        // return view('dashboard', compact(
+        //     'totalColocations',
+        //     'totalMembers',
+        //     'totalExpenses',
+        //     'pendingPayments',
+        //     'recentColocations'
+        // ));
     }
         public function create()
     {

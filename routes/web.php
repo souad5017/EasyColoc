@@ -25,7 +25,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     // colocation
-    Route::get('/colocations', [ColocationController::class, 'index'])->name('colocations.index');
+
+    Route::get('/colocation', [ColocationController::class, 'dashboard'])->name('colocation.index');
     Route::get('/colocations/create', [ColocationController::class, 'create'])->name('colocations.createcolocation');
     Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
     Route::get('/colocations/{id}', [ColocationController::class, 'show'])->name('colocations.show');

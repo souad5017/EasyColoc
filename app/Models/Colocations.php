@@ -15,17 +15,22 @@ class Colocations extends Model
 
     public function members()
     {
-          return $this->belongsToMany(
-        User::class,
-        'colocation_memberships',   
-        'colocations_id',         
-        'user_id' )
-                    ->withPivot('role', 'joined_at', 'left_at')
-                    ->withTimestamps();
+        return $this->belongsToMany(
+            User::class,
+            'colocation_memberships',
+            'colocations_id',
+            'user_id'
+        )
+            ->withPivot('role', 'joined_at', 'left_at')
+            ->withTimestamps();
     }
 
-        public function owner()
+    public function owner()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function expenses()
+    {
+        return $this->hasMany(Depenses::class);
     }
 }
