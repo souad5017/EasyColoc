@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ColocationController extends Controller
 {
+    public function dashboard()
+{
+    $activeColocation = Colocations::where('status', 'active')->first();
+
+    return view('dashboard', compact('activeColocation'));
+}
 
     public function index()
     {
@@ -24,30 +30,28 @@ class ColocationController extends Controller
 
 
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+    ]);
 
-        $user = Auth::user();
+    $user = Auth::user();
 
-        $colocation = Colocations::create([
-            'name' => $request->name,
-            'status' => 'active',
-            'created_by' => $user->id,
-        ]);
+    $colocation = Colocations::create([
+        'name' => $request->name,
+        'status' => 'active',
+        'created_by' => $user->id,
+    ]);
 
-        $user->colocations()->attach($colocation->id, [
-            'role' => 'owner',
-            'joined_at' => now(),
-        ]);
+    $user->colocations()->attach($colocation->id, [
+        'role' => 'owner',
+        'joined_at' => now(),
+    ]);
 
-        $user->syncRoles(['owner']);
-
-        return redirect()->route('colocations.show', $colocation->id)
-                         ->with('success', 'Colocation créée et vous êtes l\'Owner!');
-    }
+    return redirect()->route('colocations.show', $colocation->id)
+                     ->with('success', 'Colocation créée et vous êtes l\'Owner!');
+}
 
    
     public function show($id)

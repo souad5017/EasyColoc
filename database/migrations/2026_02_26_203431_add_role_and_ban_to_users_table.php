@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
      Schema::table('users', function (Blueprint $table) {
+        $table->string('role')->default('user'); 
         $table->boolean('is_banned')->default(false); 
     });
     }
@@ -22,6 +23,7 @@ return new class extends Migration
 public function down(): void
     {
     Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('role');
         $table->dropColumn('is_banned');
     });
     }

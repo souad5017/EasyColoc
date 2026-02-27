@@ -76,7 +76,7 @@
             <a href="{{ route('colocations.createcolocation') }}" class="block bg-indigo-600 text-white font-semibold py-4 rounded-2xl text-center shadow-lg hover:bg-indigo-700 transition duration-300">
                 Create New Colocation
             </a>
-            <a href="" class="block bg-purple-600 text-white font-semibold py-4 rounded-2xl text-center shadow-lg hover:bg-purple-700 transition duration-300">
+            <a href="{{ route('colocations.show' , $colocation->id) }}" class="block bg-purple-600 text-white font-semibold py-4 rounded-2xl text-center shadow-lg hover:bg-purple-700 transition duration-300">
                 Add Expense
             </a>
         </div>

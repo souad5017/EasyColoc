@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ColocationController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Categories;
 use Illuminate\Support\Facades\Route;
@@ -22,10 +23,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
 
 Route::middleware(['auth'])->group(function () {
+
+    // colocation
     Route::get('/colocations', [ColocationController::class, 'index'])->name('colocations.index');
     Route::get('/colocations/create', [ColocationController::class, 'create'])->name('colocations.createcolocation');
     Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
     Route::get('/colocations/{id}', [ColocationController::class, 'show'])->name('colocations.show');
+
+    //invitation
+    Route::get('/mambers/{colocation}/create', [InvitationController::class, 'create'])->name('members.create');
+    Route::post('/mambers/{colocationId}/store', [InvitationController::class, 'sendInvitation'])->name('members.store');
+    Route::get('/invitations/join/{token}', [InvitationController::class, 'join'])->name('invitations.join');
+    Route::post('/invitations/{token}/accept', [InvitationController::class, 'accept'])->name('invitations.accept');
 });
 
 require __DIR__.'/auth.php';

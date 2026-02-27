@@ -6,16 +6,17 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable , HasRoles;
+    use HasFactory, Notifiable ;
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
         'is_banned'
     ];
 
@@ -29,10 +30,14 @@ class User extends Authenticatable
         'is_banned' => 'boolean',
     ];
 
-    public function colocations()
+public function colocations()
 {
-    return $this->belongsToMany(Colocations::class, 'colocation_memberships')
-                ->withPivot('role', 'joined_at', 'left_at')
-                ->withTimestamps();
+    return $this->belongsToMany(
+        Colocations::class,
+        'colocation_memberships',
+        'user_id',
+        'colocations_id'
+    )->withPivot('role', 'joined_at')
+     ->withTimestamps();
 }
 }
