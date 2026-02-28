@@ -31,6 +31,6 @@ class Colocations extends Model
     }
     public function expenses()
     {
-        return $this->hasMany(Depenses::class);
+        return $this->hasMany(Depenses::class , 'colocations_id');
     }
 }

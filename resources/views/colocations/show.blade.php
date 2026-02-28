@@ -15,14 +15,13 @@
                     <span class="px-2 py-1 rounded-full {{ $colocation->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                         {{ ucfirst($colocation->status) }}
                     </span>
-                    <p class="mt-1 text-gray-500 text-sm">Créée par: {{ $colocation->creator->name ?? 'Inconnu' }}</p>
+                    <p class="mt-1 text-gray-500 text-sm">Créée par: {{ $colocation->owner->name ?? 'Inconnu' }}</p>
                     <p class="text-gray-500 text-sm">Date: {{ $colocation->created_at->format('d/m/Y') }}</p>
                 </div>
 
                 <div class="flex gap-2 mt-4 sm:mt-0">
                     <a href="{{ route('members.create', $colocation->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Ajouter Membre</a>
                     <a href="" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Ajouter Dépense</a>
-                    <a href="" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Inviter</a>
                 </div>
             </div>
         </div>

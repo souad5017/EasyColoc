@@ -1,17 +1,14 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-extrabold text-3xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Create Your Colocation
-        </h2>
-    </x-slot>
 
     <div class="min-h-screen flex items-center justify-center px-4">
 
-        <div class="w-full max-w-3xl">
+        <div class="w-full max-w-3xl ">
 
             <!-- Card -->
             <div class="relative bg-white/70 backdrop-blur-2xl shadow-2xl rounded-3xl p-10 border border-white/40">
-
+        <h2 class="font-extrabold text-3xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Create Your Colocation
+        </h2>
                 <!-- Decorative Gradient -->
                 <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-400 rounded-full blur-3xl opacity-20"></div>
                 <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-400 rounded-full blur-3xl opacity-20"></div>
