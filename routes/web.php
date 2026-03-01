@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColocationController;
+use App\Http\Controllers\DepensesController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Categories;
@@ -52,6 +53,16 @@ Route::post('/colocation/{id}/categories', [CategoryController::class, 'store'])
 Route::post('/colocationcategories/{id}/update', [CategoryController::class, 'update'])->name('categories.update');
 Route::get('/colocation/categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
 Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+   //depenses
+Route::prefix('colocation/{colocationId}/expenses')->group(function() {
+    // Route::get('/', [DepensesController::class, 'index'])->name('depenses.index');
+    Route::get('/create', [DepensesController::class, 'create'])->name('depenses.create');
+    Route::post('/store', [DepensesController::class, 'store'])->name('depenses.store');
+    Route::get('/{id}/edit', [DepensesController::class, 'edit'])->name('depenses.edit');
+    Route::post('/{id}/update', [DepensesController::class, 'update'])->name('depenses.update');
+    Route::delete('/{id}/delete', [DepensesController::class, 'destroy'])->name('depenses.destroy');
+});
 
 });
 

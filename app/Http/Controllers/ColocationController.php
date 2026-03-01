@@ -36,13 +36,9 @@ class ColocationController extends Controller
         // dump($colocations);
         // dump($total);
 
-        $colocation = auth()->user()
-            ->colocations()
-            ->with('owner')
-            ->findOrFail($id);
-      $categories = Categories::where('is_global', true)
-    ->orWhere('colocation_id', $colocation->id)
-    ->get();
+        $colocation = auth()->user()->colocations()->with('owner')->findOrFail($id);
+        // $categories = Categories::where('is_global', true)->orWhere('colocation_id', $colocation->id)->get();
+        // $depenses = $colocation->depenses()->with('user', 'category')->get();
 
         return view('colocations.show', compact('colocation', 'colocations', 'balance', 'total', 'share', 'membercount'));
     }

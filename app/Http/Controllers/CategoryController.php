@@ -11,15 +11,12 @@ class CategoryController extends Controller
 
     public function index($colocationId)
     {
-        // Jib colocation b id
         $colocation = Colocations::findOrFail($colocationId);
 
-        // Jib categories li global w li dial had colocation
         $categories = Categories::where('is_global', true)
             ->orWhere('colocation_id', $colocationId)
             ->get();
 
-        // Sift l-view
         return view('categories.index', compact('categories', 'colocation'));
     }
 

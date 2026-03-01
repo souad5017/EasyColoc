@@ -27,7 +27,7 @@
                 @if ( $colocation->status == 'active' )
                 <div class="flex gap-2 mt-4 sm:mt-0">
                     <a href="{{ route('members.create', $colocation->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Ajouter Membre</a>
-                    <a href="" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Ajouter Dépense</a>
+                    <a href="{{ route('depenses.create', $colocation->id) }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Ajouter Dépense</a>
                     <a href="{{ route('categories.index', $colocation->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Ajouter Catégorie</a>
                 </div>
                 @endif
@@ -50,9 +50,6 @@
                 <p class="text-3xl font-bold text-green-600">{{ $colocation->depenses?->sum('amount') ?? 0 }} MAD</p>
             </div>
         </div>
-
-
-
 
         <div x-data="{ tab: 'membres' }" class="space-y-4">
 
@@ -101,15 +98,47 @@
                     <p class="text-gray-500">Aucun membre pour le moment.</p>
                     @endif
                 </div>
-
                 <div x-show="tab === 'depenses'" x-cloak>
                     <h4 class="text-lg font-semibold mb-3">Dépenses</h4>
                     @if($colocation->depenses && $colocation->depenses->isNotEmpty())
                     <ul class="divide-y divide-gray-200">
                         @foreach($colocation->depenses as $depense)
                         <li class="flex justify-between items-center py-2">
-                            <span class="text-gray-700">{{ $depense->title }}</span>
-                            <span class="text-gray-700 font-semibold">{{ $depense->amount }} MAD</span>
+
+                            <div>
+                                <span class="text-gray-700">{{ $depense->label }}</span>
+                                <span class="text-gray-700 font-semibold ml-4">
+                                    {{ $depense->amount }} MAD
+                                </span>
+                            </div>
+
+                            <div class="flex gap-2">
+
+                                @if ($depense->user_id == Auth::id())
+                                <form action="{{ route('depenses.destroy', [$colocation->id, $depense->id]) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Voulez-vous vraiment supprimer cette dépense ?');">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm shadow">
+                                        Supprimer
+                                    </button>
+                                </form>
+                                @endif
+                                <!-- Button Update -->
+                                <a href="{{ route('depenses.edit', [$colocation->id, $depense->id]) }}"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm shadow">
+                                    Modifier
+                                </a>
+
+                                <!-- Button Delete -->
+
+
+
+                            </div>
+
                         </li>
                         @endforeach
                     </ul>
@@ -117,6 +146,7 @@
                     <p class="text-gray-500">Aucune dépense pour le moment.</p>
                     @endif
                 </div>
+
 
                 <div x-show="tab === 'invitations'" x-cloak>
                     <h4 class="text-lg font-semibold mb-3">Invitations</h4>
@@ -144,7 +174,7 @@
                         <li class="flex justify-between items-center py-2">
                             <span class="text-gray-700">{{ $category->name }}</span>
                             <div class="flex gap-2">
-                               @if (!$category->is_global)
+                                @if (!$category->is_global)
                                 <a href="{{ route('categories.edit', $category->id) }}"
                                     class="px-3 py-1 bg-yellow-400 text-white rounded-lg hover:bg-yellow-500">
                                     Modifier
@@ -159,8 +189,8 @@
                                         Supprimer
                                     </button>
                                 </form>
-                               @endif
-                             
+                                @endif
+
                             </div>
                         </li>
                         @endforeach

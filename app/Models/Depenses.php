@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Depenses extends Model
 {
-          protected $fillable = [
+    protected $fillable = [
         'colocation_id',
         'user_id',
         'label',
         'amount',
+        'categories_id'
     ];
 
     public function user()
@@ -22,4 +23,8 @@ class Depenses extends Model
 {
     return $this->belongsTo(Colocations::class, 'colocations_id'); 
 }
+  public function category()
+    {
+        return $this->belongsTo(Categories::class);
+    }
 }
