@@ -25,12 +25,13 @@
                     <p class="text-gray-500 text-sm">Date: {{ $colocation->created_at->format('d/m/Y') }}</p>
                 </div>
                 @if ( $colocation->status == 'active' )
-                 <div class="flex gap-2 mt-4 sm:mt-0">
+                <div class="flex gap-2 mt-4 sm:mt-0">
                     <a href="{{ route('members.create', $colocation->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Ajouter Membre</a>
                     <a href="" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Ajouter Dépense</a>
+                    <a href="{{ route('categories.index', $colocation->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Ajouter Catégorie</a>
                 </div>
                 @endif
-               
+
             </div>
         </div>
 
@@ -73,6 +74,11 @@
                     :class="tab === 'invitations' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
                     class="px-4 py-2 rounded-lg font-semibold transition">
                     Invitations
+                </button>
+                <button @click="tab = 'categories'"
+                    :class="tab === 'categories' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
+                    class="px-4 py-2 rounded-lg font-semibold transition">
+                    Categories
                 </button>
             </div>
 
@@ -127,6 +133,40 @@
                     </ul>
                     @else
                     <p class="text-gray-500">Aucune invitation envoyée.</p>
+                    @endif
+                </div>
+                <div x-show="tab === 'categories'" x-cloak>
+                    <h4 class="text-lg font-semibold mb-3">Catégories</h4>
+
+                    @if($colocation->categories && $colocation->categories->isNotEmpty())
+                    <ul class="divide-y divide-gray-200">
+                        @foreach($colocation->categories as $category)
+                        <li class="flex justify-between items-center py-2">
+                            <span class="text-gray-700">{{ $category->name }}</span>
+                            <div class="flex gap-2">
+                               @if (!$category->is_global)
+                                <a href="{{ route('categories.edit', $category->id) }}"
+                                    class="px-3 py-1 bg-yellow-400 text-white rounded-lg hover:bg-yellow-500">
+                                    Modifier
+                                </a>
+
+                                <!-- Bouton Supprimer -->
+                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                        Supprimer
+                                    </button>
+                                </form>
+                               @endif
+                             
+                            </div>
+                        </li>
+                        @endforeach
+                    </ul>
+                    @else
+                    <p class="text-gray-500">Aucune catégorie disponible.</p>
                     @endif
                 </div>
             </div>

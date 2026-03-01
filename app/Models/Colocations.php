@@ -24,13 +24,23 @@ class Colocations extends Model
             ->withPivot('role', 'joined_at')
             ->withTimestamps();
     }
+        public function users()
+    {
+        return $this->belongsToMany(User::class, 'colocation_memberships', 'colocations_id', 'user_id')
+                    ->withPivot('role', 'joined_at', 'left_at')
+                    ->withTimestamps();
+    }
 
     public function owner()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    public function expenses()
+    public function depenses()
     {
-        return $this->hasMany(Depenses::class , 'colocations_id');
+        return $this->hasMany(Depenses::class , 'colocation_id');
     }
+    public function categories()
+{
+    return $this->hasMany(Categories::class ,  'colocation_id')->orWhere('is_global', true);
+}
 }

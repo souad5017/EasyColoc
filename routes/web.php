@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
@@ -43,6 +44,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/mambers/{colocationId}/store', [InvitationController::class, 'sendInvitation'])->name('members.store');
     Route::get('/invitations/join/{token}', [InvitationController::class, 'join'])->name('invitations.join');
     Route::post('/invitations/{token}/accept', [InvitationController::class, 'accept'])->name('invitations.accept');
+
+
+    //category
+Route::get('/colocation/{id}/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::post('/colocation/{id}/categories', [CategoryController::class, 'store'])->name('categories.store');
+Route::post('/colocationcategories/{id}/update', [CategoryController::class, 'update'])->name('categories.update');
+Route::get('/colocation/categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
 });
 
 require __DIR__ . '/auth.php';

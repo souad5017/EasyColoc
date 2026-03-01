@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('colocations', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('status')->default('active');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();

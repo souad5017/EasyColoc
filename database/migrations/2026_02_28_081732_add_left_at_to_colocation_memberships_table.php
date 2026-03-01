@@ -12,7 +12,7 @@ return new class extends Migration
 public function up()
 {
     Schema::table('colocation_memberships', function (Blueprint $table) {
-        $table->timestamp('left_at')->nullable(); // nullable باش ما يسببش مشاكل للبيانات القديمة
+        $table->timestamp('left_at')->nullable(); 
     });
 }
 

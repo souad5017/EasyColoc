@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categories;
 use App\Models\Colocations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,12 +19,12 @@ class ColocationController extends Controller
             ->first();
         return view('colocations.show', compact('colocation'));
     }
-    public function show(Colocations $colocations , $id)
+    public function show(Colocations $colocations, $id)
     {
-        $colocations->load(['users', 'expenses.user']);
+        $colocations->load(['users', 'depenses.user']);
         $membercount = max($colocations->users->count(), 1);
-        $total = $colocations->expenses->sum("amount");
-        $share = $colocations->expenses->sum("amount") / $membercount;
+        $total = $colocations->depenses->sum("amount");
+        $share = $colocations->depenses->sum("amount") / $membercount;
 
         $balance = $colocations->users->map(fn($user) => [
             "user" => $user,
@@ -32,14 +33,18 @@ class ColocationController extends Controller
             "balance" => $paied - $share,
         ]);
 
-        dump($balance);
-        dump($total);
+        // dump($colocations);
+        // dump($total);
 
         $colocation = auth()->user()
             ->colocations()
             ->with('owner')
             ->findOrFail($id);
-        return view('colocations.show', compact('colocation', 'colocations','balance', 'total', 'share', 'membercount'));
+      $categories = Categories::where('is_global', true)
+    ->orWhere('colocation_id', $colocation->id)
+    ->get();
+
+        return view('colocations.show', compact('colocation', 'colocations', 'balance', 'total', 'share', 'membercount'));
     }
 
 
@@ -50,11 +55,11 @@ class ColocationController extends Controller
 
         $totalColocations = $user->colocations()->count();
         $totalMembers = $user->colocations()->withCount('members')->get()->sum('members_count');
-        $totalExpenses = $user->colocations()->with('expenses')->get()->sum(function ($colocation) {
-            return $colocation->expenses->sum('amount');
+        $totalExpenses = $user->colocations()->with('depenses')->get()->sum(function ($colocation) {
+            return $colocation->depenses->sum('amount');
         });
-        $pendingPayments = $user->colocations()->with('expenses')->get()->sum(function ($colocation) {
-            return $colocation->expenses->where('status', 'pending')->count();
+        $pendingPayments = $user->colocations()->with('depenses')->get()->sum(function ($colocation) {
+            return $colocation->depenses->where('status', 'pending')->count();
         });
 
         $recentColocations = $user->colocations()->latest()->take(5)->get();

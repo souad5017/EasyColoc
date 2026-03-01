@@ -11,10 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('settlements', function (Blueprint $table) {
+       Schema::create('categories', function (Blueprint $table) {
             $table->id();
+
+          $table->foreignId('colocation_id')->nullable()->constrained()->cascadeOnDelete();
+
+            $table->string('name');
+            $table->boolean('is_global')->default(false);
             $table->timestamps();
-        });
+
+            $table->unique(['colocation_id', 'name']); 
+       
+    });
     }
 
     /**
@@ -22,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('settlements');
+        Schema::dropIfExists('categories');
     }
 };

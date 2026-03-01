@@ -40,4 +40,8 @@ public function colocations()
     )->withPivot('role', 'joined_at')
      ->withTimestamps();
 }
+    public function depenses()
+{
+    return $this->hasMany(Depenses::class);
+}
 }

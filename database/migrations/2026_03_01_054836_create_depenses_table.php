@@ -11,8 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('depenses', function (Blueprint $table) {
             $table->id();
+ $table->foreignId('colocation_id')
+              ->constrained()
+              ->cascadeOnDelete();
+
+        $table->foreignId('user_id')
+              ->constrained()
+              ->cascadeOnDelete();
+
+        $table->string('label');
+        $table->decimal('amount', 8, 2);
             $table->timestamps();
         });
     }
@@ -22,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('depenses');
     }
 };
