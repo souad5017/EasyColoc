@@ -12,13 +12,34 @@ class ColocationController extends Controller
     public function dashboard()
     {
 
-        $colocation =  Colocations::where('status', 'active')->with('owner')->first();
+        $colocation = auth()->user()
+            ->colocations()
+            ->where('status', 'active')
+            ->first();
         return view('colocations.show', compact('colocation'));
     }
-    public function show($id)
+    public function show(Colocations $colocations , $id)
     {
-        $colocation = Colocations::with('owner')->findOrFail($id);
-        return view('colocations.show', compact('colocation'));
+        $colocations->load(['users', 'expenses.user']);
+        $membercount = max($colocations->users->count(), 1);
+        $total = $colocations->expenses->sum("amount");
+        $share = $colocations->expenses->sum("amount") / $membercount;
+
+        $balance = $colocations->users->map(fn($user) => [
+            "user" => $user,
+            "paied" => $paied = $colocations->expenses->where("user_id", $user->id)->sum("amount"),
+            "share" => $share,
+            "balance" => $paied - $share,
+        ]);
+
+        dump($balance);
+        dump($total);
+
+        $colocation = auth()->user()
+            ->colocations()
+            ->with('owner')
+            ->findOrFail($id);
+        return view('colocations.show', compact('colocation', 'colocations','balance', 'total', 'share', 'membercount'));
     }
 
 
@@ -60,19 +81,27 @@ class ColocationController extends Controller
         ]);
 
         $user = Auth::user();
+        $hasActiveColocation = $user->colocations()
+            ->where('status', 'active')
+            ->exists();
 
-        $colocation = Colocations::create([
-            'name' => $request->name,
-            'status' => 'active',
-            'created_by' => $user->id,
-        ]);
+        if ($hasActiveColocation) {
+            return redirect()->back()
+                ->with('error', 'Vous avez déjà une colocation active.');
+        } else {
+            $colocation = Colocations::create([
+                'name' => $request->name,
+                'status' => 'active',
+                'created_by' => auth()->id(),
+            ]);
 
-        $user->colocations()->attach($colocation->id, [
-            'role' => 'owner',
-            'joined_at' => now(),
-        ]);
+            $user->colocations()->attach($colocation->id, [
+                'role' => 'owner',
+                'joined_at' => now(),
+            ]);
 
-        return redirect()->route('colocations.show', $colocation->id)
-            ->with('success', 'Colocation créée et vous êtes l\'Owner!');
+            return redirect()->route('colocations.show', $colocation->id)
+                ->with('success', 'Colocation créée et vous êtes l\'Owner!');
+        }
     }
 }

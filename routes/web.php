@@ -31,6 +31,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
     Route::get('/colocations/{id}', [ColocationController::class, 'show'])->name('colocations.show');
 
+ 
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/colocations/{colocation}/members', [ColocationController::class, 'members'])->name('colocations.members');
+//     Route::get('/colocations/{colocation}/expenses', [ColocationController::class, 'expenses'])->name('colocations.expenses');
+//     Route::get('/colocations/{colocation}/invitations', [ColocationController::class, 'invitations'])->name('colocations.invitations');
+// });
+
     //invitation
     Route::get('/mambers/{colocation}/create', [InvitationController::class, 'create'])->name('members.create');
     Route::post('/mambers/{colocationId}/store', [InvitationController::class, 'sendInvitation'])->name('members.store');

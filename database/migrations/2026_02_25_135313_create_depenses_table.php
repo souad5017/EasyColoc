@@ -13,10 +13,23 @@ return new class extends Migration
     {
         Schema::create('depenses', function (Blueprint $table) {
             $table->id();
+            
+            // Relation m3a colocation
+            $table->foreignId('colocation_id')
+                ->constrained('colocations')
+                ->onDelete('cascade');
+
+            // Relation m3a user
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onDelete('cascade');
+
+            $table->string('label'); // label dyal expense
+            $table->decimal('amount', 10, 2); // montant dyal expense
+
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

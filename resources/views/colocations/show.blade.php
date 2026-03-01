@@ -15,14 +15,22 @@
                     <span class="px-2 py-1 rounded-full {{ $colocation->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                         {{ ucfirst($colocation->status) }}
                     </span>
-                    <p class="mt-1 text-gray-500 text-sm">Créée par: {{ $colocation->owner->name ?? 'Inconnu' }}</p>
+                    <p class="mt-1 text-gray-500 text-sm">Créée par:
+                        @php $owner = $colocation->owner;@endphp
+                        @if($owner && $owner->id === auth()->id())
+                        {{ $colocation->owner->name ?? 'Inconnu' }} (vous)
+                        @else
+                        {{ $owner->name ?? '—' }} @endif
+                    </p>
                     <p class="text-gray-500 text-sm">Date: {{ $colocation->created_at->format('d/m/Y') }}</p>
                 </div>
-
-                <div class="flex gap-2 mt-4 sm:mt-0">
+                @if ( $colocation->status == 'active' )
+                 <div class="flex gap-2 mt-4 sm:mt-0">
                     <a href="{{ route('members.create', $colocation->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Ajouter Membre</a>
                     <a href="" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Ajouter Dépense</a>
                 </div>
+                @endif
+               
             </div>
         </div>
 
@@ -42,60 +50,86 @@
             </div>
         </div>
 
-        <!-- Members List -->
-        <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
-            <h4 class="text-lg font-semibold mb-3">Membres</h4>
-            @if($colocation->users && $colocation->users->isNotEmpty())
-                <ul class="divide-y divide-gray-200">
-                    @foreach($colocation->users as $user)
+
+
+
+        <div x-data="{ tab: 'membres' }" class="space-y-4">
+
+            <!-- Tabs -->
+            <div class="bg-white/80 backdrop-blur-xl shadow-lg rounded-2xl p-4 flex space-x-6">
+                <button @click="tab = 'membres'"
+                    :class="tab === 'membres' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
+                    class="px-4 py-2 rounded-lg font-semibold transition">
+                    Membres
+                </button>
+
+                <button @click="tab = 'depenses'"
+                    :class="tab === 'depenses' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
+                    class="px-4 py-2 rounded-lg font-semibold transition">
+                    Dépenses
+                </button>
+
+                <button @click="tab = 'invitations'"
+                    :class="tab === 'invitations' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
+                    class="px-4 py-2 rounded-lg font-semibold transition">
+                    Invitations
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="bg-white/80 backdrop-blur-xl shadow-lg rounded-2xl p-4">
+                <div x-show="tab === 'membres'">
+                    <h4 class="text-lg font-semibold mb-3">Membres</h4>
+                    @if($colocation->users && $colocation->users->isNotEmpty())
+                    <ul class="divide-y divide-gray-200">
+                        @foreach($colocation->users as $user)
                         <li class="flex justify-between items-center py-2">
                             <span class="text-gray-700">{{ $user->name }}</span>
                             <span class="text-sm font-medium {{ $user->pivot->role == 'owner' ? 'text-indigo-600' : 'text-gray-500' }}">
                                 {{ ucfirst($user->pivot->role) }}
                             </span>
                         </li>
-                    @endforeach
-                </ul>
-            @else
-                <p class="text-gray-500">Aucun membre pour le moment.</p>
-            @endif
-        </div>
+                        @endforeach
+                    </ul>
+                    @else
+                    <p class="text-gray-500">Aucun membre pour le moment.</p>
+                    @endif
+                </div>
 
-        <!-- Dépenses List -->
-        <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
-            <h4 class="text-lg font-semibold mb-3">Dépenses</h4>
-            @if($colocation->depenses && $colocation->depenses->isNotEmpty())
-                <ul class="divide-y divide-gray-200">
-                    @foreach($colocation->depenses as $depense)
+                <div x-show="tab === 'depenses'" x-cloak>
+                    <h4 class="text-lg font-semibold mb-3">Dépenses</h4>
+                    @if($colocation->depenses && $colocation->depenses->isNotEmpty())
+                    <ul class="divide-y divide-gray-200">
+                        @foreach($colocation->depenses as $depense)
                         <li class="flex justify-between items-center py-2">
                             <span class="text-gray-700">{{ $depense->title }}</span>
                             <span class="text-gray-700 font-semibold">{{ $depense->amount }} MAD</span>
                         </li>
-                    @endforeach
-                </ul>
-            @else
-                <p class="text-gray-500">Aucune dépense pour le moment.</p>
-            @endif
-        </div>
+                        @endforeach
+                    </ul>
+                    @else
+                    <p class="text-gray-500">Aucune dépense pour le moment.</p>
+                    @endif
+                </div>
 
-        <!-- Invitations List -->
-        <div class="bg-white shadow-md rounded-xl p-6 border border-gray-200">
-            <h4 class="text-lg font-semibold mb-3">Invitations</h4>
-            @if($colocation->invitations && $colocation->invitations->isNotEmpty())
-                <ul class="divide-y divide-gray-200">
-                    @foreach($colocation->invitations as $inv)
+                <div x-show="tab === 'invitations'" x-cloak>
+                    <h4 class="text-lg font-semibold mb-3">Invitations</h4>
+                    @if($colocation->invitations && $colocation->invitations->isNotEmpty())
+                    <ul class="divide-y divide-gray-200">
+                        @foreach($colocation->invitations as $inv)
                         <li class="flex justify-between items-center py-2">
                             <span class="text-gray-700">{{ $inv->email }}</span>
                             <span class="text-sm font-medium {{ $inv->accepted ? 'text-green-600' : 'text-gray-500' }}">
                                 {{ $inv->accepted ? 'Acceptée' : 'En attente' }}
                             </span>
                         </li>
-                    @endforeach
-                </ul>
-            @else
-                <p class="text-gray-500">Aucune invitation envoyée.</p>
-            @endif
+                        @endforeach
+                    </ul>
+                    @else
+                    <p class="text-gray-500">Aucune invitation envoyée.</p>
+                    @endif
+                </div>
+            </div>
         </div>
-
     </div>
 </x-app-layout>

@@ -21,7 +21,7 @@ class Colocations extends Model
             'colocations_id',
             'user_id'
         )
-            ->withPivot('role', 'joined_at', 'left_at')
+            ->withPivot('role', 'joined_at')
             ->withTimestamps();
     }
 

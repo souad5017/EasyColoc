@@ -6,13 +6,36 @@
 
             <!-- Card -->
             <div class="relative bg-white/70 backdrop-blur-2xl shadow-2xl rounded-3xl p-10 border border-white/40">
-        <h2 class="font-extrabold text-3xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Create Your Colocation
-        </h2>
+                <h2 class="font-extrabold text-3xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    Create Your Colocation
+                </h2>
                 <!-- Decorative Gradient -->
                 <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-400 rounded-full blur-3xl opacity-20"></div>
                 <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-400 rounded-full blur-3xl opacity-20"></div>
+{{-- Validation Errors --}}
+@if ($errors->any())
+    <div class="mb-6 px-6 py-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 shadow-sm">
+        <ul class="list-disc pl-5 space-y-1">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
+{{-- Session Error --}}
+@if(session('error'))
+    <div class="mb-6 px-6 py-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 shadow-sm">
+        {{ session('error') }}
+    </div>
+@endif
+
+{{-- Session Success --}}
+@if(session('success'))
+    <div class="mb-6 px-6 py-4 rounded-2xl bg-green-100 border border-green-300 text-green-700 shadow-sm">
+        {{ session('success') }}
+    </div>
+@endif
                 <form method="POST" action="{{ route('colocations.store') }}" class="space-y-8 relative z-10">
                     @csrf
 
@@ -22,10 +45,10 @@
                             Colocation Name
                         </label>
                         <input type="text"
-                               name="name"
-                               placeholder="Ex: Casa Downtown"
-                               class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm"
-                               required>
+                            name="name"
+                            placeholder="Ex: Casa Downtown"
+                            class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm"
+                            required>
                     </div>
 
                     <!-- Description -->
@@ -34,22 +57,22 @@
                             Description
                         </label>
                         <textarea name="description"
-                                  rows="4"
-                                  placeholder="Short description about this colocation..."
-                                  class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm"></textarea>
+                            rows="4"
+                            placeholder="Short description about this colocation..."
+                            class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm"></textarea>
                     </div>
 
                     <!-- Buttons -->
                     <div class="flex justify-between items-center pt-6">
 
                         <a href="{{ route('dashboard') }}"
-                           class="text-gray-600 font-semibold hover:text-gray-900 transition">
+                            class="text-gray-600 font-semibold hover:text-gray-900 transition">
                             ← Back to Dashboard
                         </a>
 
                         <button type="submit"
-                                class="px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition duration-300">
-                            Create Colocation 
+                            class="px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition duration-300">
+                            Create Colocation
                         </button>
 
                     </div>
