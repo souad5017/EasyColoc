@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\DepensesController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Categories;
 use Illuminate\Support\Facades\Route;
@@ -33,12 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
     Route::get('/colocations/{id}', [ColocationController::class, 'show'])->name('colocations.show');
 
- 
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/colocations/{colocation}/members', [ColocationController::class, 'members'])->name('colocations.members');
-//     Route::get('/colocations/{colocation}/expenses', [ColocationController::class, 'expenses'])->name('colocations.expenses');
-//     Route::get('/colocations/{colocation}/invitations', [ColocationController::class, 'invitations'])->name('colocations.invitations');
-// });
+
 
     //invitation
     Route::get('/mambers/{colocation}/create', [InvitationController::class, 'create'])->name('members.create');
@@ -64,6 +60,12 @@ Route::prefix('colocation/{colocationId}/expenses')->group(function() {
     Route::delete('/{id}/delete', [DepensesController::class, 'destroy'])->name('depenses.destroy');
 });
 
+
+//paymants
+
+Route::post('/settlements/{id}/paid', [PaymentController::class, 'markPaid'])
+    ->name('settlements.paid')
+    ->middleware('auth');
 });
 
 require __DIR__ . '/auth.php';

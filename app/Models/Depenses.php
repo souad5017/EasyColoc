@@ -27,4 +27,9 @@ class Depenses extends Model
     {
         return $this->belongsTo(Categories::class);
     }
+
+    public function payments()
+{
+    return $this->hasMany(payments::class, 'depense_id');
+}
 }

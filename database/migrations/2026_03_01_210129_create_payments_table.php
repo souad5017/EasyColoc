@@ -17,6 +17,7 @@ return new class extends Migration
         $table->foreignId('colocation_id')
               ->constrained()
               ->cascadeOnDelete();
+        $table->foreignId('depense_id')->constrained()->onDelete('cascade');
 
         $table->foreignId('from_user_id')
               ->constrained('users')
@@ -26,8 +27,10 @@ return new class extends Migration
               ->constrained('users')
               ->cascadeOnDelete();
         $table->decimal('amount', 8, 2);
-        $table->enum('status', ['pending', 'completed', 'cancelled'])
+        $table->enum('status', ['pending', 'completed'])
               ->default('pending');
+        $table->timestamp('paid_at')->nullable();
+        
 
             $table->timestamps();
         });

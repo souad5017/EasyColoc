@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categories;
 use App\Models\Colocations;
+use App\Models\payments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -17,30 +17,100 @@ class ColocationController extends Controller
             ->colocations()
             ->where('status', 'active')
             ->first();
-        return view('colocations.show', compact('colocation'));
+        $memberCount = max($colocation->users->count(), 1);
+        $total = $colocation->depenses->sum('amount');
+        $share = $memberCount > 0 ? $total / $memberCount : 0;
+
+        $balance = $colocation->users->map(function ($user) use ($colocation, $share) {
+            $paid = $colocation->depenses->where('user_id', $user->id)->sum('amount');
+
+            return [
+                'user' => $user,
+                'paid' => $paid,
+                'share' => $share,
+                'balance' => $share - $paid,
+            ];
+        });
+
+        $user = auth()->user();
+        
+        $toReceive = payments::whereHas('depense', function ($q) use ($colocation) {
+            $q->where('colocation_id', $colocation->id);
+        })
+            ->where('to_user_id', $user->id)
+            ->where('status', 'pending')
+            ->with('sender')
+            ->get();
+
+
+        $toPay = payments::whereHas('depense', function ($q) use ($colocation) {
+            $q->where('colocation_id', $colocation->id);
+        })
+            ->where('from_user_id', $user->id)
+            ->where('status', 'pending')
+            ->with('receiver')
+            ->get();
+
+        return view('colocations.show', compact(
+            'colocation',
+            'balance',
+            'total',
+            'share',
+            'memberCount',
+            'toPay',
+            'toReceive'
+        ));
     }
-    public function show(Colocations $colocations, $id)
+    public function show($id)
     {
-        $colocations->load(['users', 'depenses.user']);
-        $membercount = max($colocations->users->count(), 1);
-        $total = $colocations->depenses->sum("amount");
-        $share = $colocations->depenses->sum("amount") / $membercount;
 
-        $balance = $colocations->users->map(fn($user) => [
-            "user" => $user,
-            "paied" => $paied = $colocations->expenses->where("user_id", $user->id)->sum("amount"),
-            "share" => $share,
-            "balance" => $paied - $share,
-        ]);
+        $colocation = Colocations::with(['users', 'depenses.user', 'owner'])
+            ->findOrFail($id);
 
-        // dump($colocations);
-        // dump($total);
+        $memberCount = max($colocation->users->count(), 1);
+        $total = $colocation->depenses->sum('amount');
+        $share = $memberCount > 0 ? $total / $memberCount : 0;
 
-        $colocation = auth()->user()->colocations()->with('owner')->findOrFail($id);
-        // $categories = Categories::where('is_global', true)->orWhere('colocation_id', $colocation->id)->get();
-        // $depenses = $colocation->depenses()->with('user', 'category')->get();
+        $balance = $colocation->users->map(function ($user) use ($colocation, $share) {
+            $paid = $colocation->depenses->where('user_id', $user->id)->sum('amount');
 
-        return view('colocations.show', compact('colocation', 'colocations', 'balance', 'total', 'share', 'membercount'));
+            return [
+                'user' => $user,
+                'paid' => $paid,
+                'share' => $share,
+                'balance' => $share - $paid,
+            ];
+        });
+
+
+        $user = auth()->user();
+        
+        $toReceive = payments::whereHas('depense', function ($q) use ($colocation) {
+            $q->where('colocation_id', $colocation->id);
+        })
+            ->where('to_user_id', $user->id)
+            ->where('status', 'pending')
+            ->with('sender')
+            ->get();
+
+
+        $toPay = payments::whereHas('depense', function ($q) use ($colocation) {
+            $q->where('colocation_id', $colocation->id);
+        })
+            ->where('from_user_id', $user->id)
+            ->where('status', 'pending')
+            ->with('receiver')
+            ->get();
+
+        return view('colocations.show', compact(
+            'colocation',
+            'balance',
+            'total',
+            'share',
+            'memberCount',
+            'toPay',
+            'toReceive'
+        ));
     }
 
 

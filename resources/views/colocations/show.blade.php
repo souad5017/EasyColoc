@@ -66,6 +66,11 @@
                     class="px-4 py-2 rounded-lg font-semibold transition">
                     Dépenses
                 </button>
+                <button @click="tab = 'payments'"
+                    :class="tab === 'payments' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
+                    class="px-4 py-2 rounded-lg font-semibold transition">
+                    Payments
+                </button>
 
                 <button @click="tab = 'invitations'"
                     :class="tab === 'invitations' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
@@ -81,67 +86,108 @@
 
             <!-- Tab Content -->
             <div class="bg-white/80 backdrop-blur-xl shadow-lg rounded-2xl p-4">
-                <div x-show="tab === 'membres'">
+                <div x-show="tab === 'membres'" x-cloak>
                     <h4 class="text-lg font-semibold mb-3">Membres</h4>
+
                     @if($colocation->users && $colocation->users->isNotEmpty())
-                    <ul class="divide-y divide-gray-200">
-                        @foreach($colocation->users as $user)
-                        <li class="flex justify-between items-center py-2">
-                            <span class="text-gray-700">{{ $user->name }}</span>
-                            <span class="text-sm font-medium {{ $user->pivot->role == 'owner' ? 'text-indigo-600' : 'text-gray-500' }}">
-                                {{ ucfirst($user->pivot->role) }}
-                            </span>
-                        </li>
-                        @endforeach
-                    </ul>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white shadow rounded-lg divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Montant dû (MAD)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach ($balance as $row )
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{$row['user']->id != Auth::id()? $row['user']->name : 'Vous' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {{ $row['user']->pivot->role == 'owner' ? 'text-indigo-600' : 'text-gray-500' }}">
+                                        {{ ucfirst($row['user']->pivot->role) }}
+                                    </td>
+
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 font-semibold">
+                                        @if($row['user']->id != Auth::id() )
+                                        <span class="{{$row['balance'] > 0 ? 'text-emerald-600 ' : 'text-red-600' }}  bg-emerald-50 px-3 py-1 rounded-full text-xs font-bold">{{ number_format($row['balance'], 2) }} DH</span>
+
+                                        @else
+                                        <span class="text-gray-400 italic text-sm">C'est vous</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     @else
                     <p class="text-gray-500">Aucun membre pour le moment.</p>
                     @endif
                 </div>
                 <div x-show="tab === 'depenses'" x-cloak>
                     <h4 class="text-lg font-semibold mb-3">Dépenses</h4>
+
                     @if($colocation->depenses && $colocation->depenses->isNotEmpty())
-                    <ul class="divide-y divide-gray-200">
-                        @foreach($colocation->depenses as $depense)
-                        <li class="flex justify-between items-center py-2">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white shadow rounded-lg divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                        Dépense
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                        Montant (MAD)
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                        Créée par
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                        Créée le
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($colocation->depenses->sortByDesc('created_at') as $depense)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $depense->label }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 font-semibold">{{ $depense->amount }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-sm">
+                                        {{ $depense->user->name}}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-sm">
+                                        {{ $depense->created_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap flex gap-2">
+                                        @if ($depense->user_id == Auth::id())
+                                        <!-- Modifier -->
+                                        <a href="{{ route('depenses.edit', [$colocation->id, $depense->id]) }}"
+                                            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm shadow">
+                                            Modifier
+                                        </a>
 
-                            <div>
-                                <span class="text-gray-700">{{ $depense->label }}</span>
-                                <span class="text-gray-700 font-semibold ml-4">
-                                    {{ $depense->amount }} MAD
-                                </span>
-                            </div>
-
-                            <div class="flex gap-2">
-
-                                @if ($depense->user_id == Auth::id())
-                                <form action="{{ route('depenses.destroy', [$colocation->id, $depense->id]) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Voulez-vous vraiment supprimer cette dépense ?');">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button type="submit"
-                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm shadow">
-                                        Supprimer
-                                    </button>
-                                </form>
-                                @endif
-                                <!-- Button Update -->
-                                <a href="{{ route('depenses.edit', [$colocation->id, $depense->id]) }}"
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm shadow">
-                                    Modifier
-                                </a>
-
-                                <!-- Button Delete -->
-
-
-
-                            </div>
-
-                        </li>
-                        @endforeach
-                    </ul>
+                                        <!-- Supprimer -->
+                                        <form action="{{ route('depenses.destroy', [$colocation->id, $depense->id]) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Voulez-vous vraiment supprimer cette dépense ?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="bg-green-600 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm shadow">
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                        @else
+                                        <span class="text-gray-400 italic text-sm">Non modifiable</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     @else
                     <p class="text-gray-500">Aucune dépense pour le moment.</p>
                     @endif
@@ -163,6 +209,98 @@
                     </ul>
                     @else
                     <p class="text-gray-500">Aucune invitation envoyée.</p>
+                    @endif
+                </div>
+                <div x-show="tab === 'payments'" x-cloak>
+                    <h4 class="text-lg font-semibold mb-3">Paiements</h4>
+                    @if($toReceive->count() > 0 || $toPay->count() > 0)
+
+                    <section class="mt-8">
+
+                        <div class="overflow-x-auto rounded-3xl border border-gray-200 shadow-sm">
+                            <table class="min-w-full text-sm">
+
+                                <thead class="bg-gray-100">
+                                    <tr class="text-left uppercase tracking-wider text-gray-600 text-xs">
+                                        <th class="px-6 py-4">Type</th>
+                                        <th class="px-6 py-4">De</th>
+                                        <th class="px-6 py-4">À</th>
+                                        <th class="px-6 py-4">Montant</th>
+                                        <th class="px-6 py-4 text-center">Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-gray-200 bg-white">
+
+                                    @foreach($toReceive as $settlement)
+                                    <tr class="hover:bg-green-600/5 transition">
+
+                                        <td class="px-6 py-4 font-bold text-green-600">
+                                            À recevoir
+                                        </td>
+
+                                        <td class="px-6 py-4 text-gray-900">
+                                            {{ $settlement->sender->name }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-gray-500">
+                                            Moi
+                                        </td>
+
+                                        <td class="px-6 py-4 font-extrabold text-green-600">
+                                            {{ number_format($settlement->amount, 2) }} DH
+                                        </td>
+
+                                        <td class="px-6 py-4 text-center">
+                                            <form method="POST" action="{{ route('settlements.paid', $settlement->id) }}">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition uppercase tracking-wider">
+                                                    Confirmer
+                                                </button>
+                                            </form>
+                                        </td>
+
+                                    </tr>
+                                    @endforeach
+
+
+
+                                    @foreach($toPay as $settlement)
+                                    <tr class="hover:bg-yellow-500/5 transition">
+
+                                        <td class="px-6 py-4 font-bold text-red-500">
+                                            À payer
+                                        </td>
+
+                                        <td class="px-6 py-4 text-gray-500">
+                                            Moi
+                                        </td>
+
+                                        <td class="px-6 py-4 text-gray-900">
+                                            {{ $settlement->receiver->name }}
+                                        </td>
+
+                                        <td class="px-6 py-4 font-extrabold text-red-500">
+                                            {{ number_format($settlement->amount, 2) }} DH
+                                        </td>
+
+                                        <td class="px-6 py-4 text-center">
+                                            <button disabled
+                                                class="px-4 py-2 bg-gray-500 text-white text-xs font-bold rounded-xl cursor-not-allowed uppercase tracking-wider">
+                                                En attente
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </section>
+
                     @endif
                 </div>
                 <div x-show="tab === 'categories'" x-cloak>
