@@ -26,9 +26,12 @@
                 </div>
                 @if ( $colocation->status == 'active' )
                 <div class="flex gap-2 mt-4 sm:mt-0">
-                    <a href="{{ route('members.create', $colocation->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Ajouter Membre</a>
                     <a href="{{ route('depenses.create', $colocation->id) }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Ajouter Dépense</a>
+                    @if (auth()->user()->role == 'owner')
+                    <a href="{{ route('members.create', $colocation->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Ajouter Membre</a>
                     <a href="{{ route('categories.index', $colocation->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Ajouter Catégorie</a>
+                    @endif
+    
                 </div>
                 @endif
 
@@ -72,11 +75,6 @@
                     Payments
                 </button>
 
-                <button @click="tab = 'invitations'"
-                    :class="tab === 'invitations' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
-                    class="px-4 py-2 rounded-lg font-semibold transition">
-                    Invitations
-                </button>
                 <button @click="tab = 'categories'"
                     :class="tab === 'categories' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-100'"
                     class="px-4 py-2 rounded-lg font-semibold transition">
@@ -161,7 +159,7 @@
                                         {{ $depense->created_at->format('d/m/Y H:i') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap flex gap-2">
-                                        @if ($depense->user_id == Auth::id())
+                                        @if ($depense->user_id == Auth::id() && $colocation->status == 'active')
                                         <!-- Modifier -->
                                         <a href="{{ route('depenses.edit', [$colocation->id, $depense->id]) }}"
                                             class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm shadow">
@@ -194,23 +192,7 @@
                 </div>
 
 
-                <div x-show="tab === 'invitations'" x-cloak>
-                    <h4 class="text-lg font-semibold mb-3">Invitations</h4>
-                    @if($colocation->invitations && $colocation->invitations->isNotEmpty())
-                    <ul class="divide-y divide-gray-200">
-                        @foreach($colocation->invitations as $inv)
-                        <li class="flex justify-between items-center py-2">
-                            <span class="text-gray-700">{{ $inv->email }}</span>
-                            <span class="text-sm font-medium {{ $inv->accepted ? 'text-green-600' : 'text-gray-500' }}">
-                                {{ $inv->accepted ? 'Acceptée' : 'En attente' }}
-                            </span>
-                        </li>
-                        @endforeach
-                    </ul>
-                    @else
-                    <p class="text-gray-500">Aucune invitation envoyée.</p>
-                    @endif
-                </div>
+
                 <div x-show="tab === 'payments'" x-cloak>
                     <h4 class="text-lg font-semibold mb-3">Paiements</h4>
                     @if($toReceive->count() > 0 || $toPay->count() > 0)
@@ -312,7 +294,7 @@
                         <li class="flex justify-between items-center py-2">
                             <span class="text-gray-700">{{ $category->name }}</span>
                             <div class="flex gap-2">
-                                @if (!$category->is_global)
+                                @if (!$category->is_global && auth()->user()->role == 'owner' && $colocation->status == 'active')
                                 <a href="{{ route('categories.edit', $category->id) }}"
                                     class="px-3 py-1 bg-yellow-400 text-white rounded-lg hover:bg-yellow-500">
                                     Modifier

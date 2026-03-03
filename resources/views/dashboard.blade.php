@@ -15,13 +15,8 @@
             </div>
 
             <div class="bg-white/80 backdrop-blur-xl shadow-lg rounded-2xl p-6 border border-white/30">
-                <h3 class="text-sm font-medium text-gray-500">Expenses</h3>
-                <p class="mt-2 text-2xl font-bold text-gray-800">${{ number_format($totalExpenses, 2) }}</p>
-            </div>
-
-            <div class="bg-white/80 backdrop-blur-xl shadow-lg rounded-2xl p-6 border border-white/30">
-                <h3 class="text-sm font-medium text-gray-500">Pending Payments</h3>
-                <p class="mt-2 text-2xl font-bold text-gray-800">{{ $pendingPayments }}</p>
+                <h3 class="text-sm font-medium text-gray-500">Depenses</h3>
+                <p class="mt-2 text-2xl font-bold text-gray-800">{{ number_format($totalExpenses, 2) }} DH</p>
             </div>
         </div>
 
